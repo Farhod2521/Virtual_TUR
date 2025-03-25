@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,16 +8,138 @@
 <style> @-ms-viewport { width: device-width; } </style>
 <link rel="stylesheet" href="vendor/reset.min.css">
 <link rel="stylesheet" href="style.css">
+<style>
+    /* Modal background */
+    .modal {
+        display: none;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+    }
+
+    /* Modal container */
+    .modal-content {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+        max-width: 500px;
+        width: 90%;
+    }
+
+    .modal-content h2 {
+        font-size: 22px;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    /* Seasons selection */
+    .seasons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .season {
+        width: 120px;
+        height: 150px;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+        text-align: center;
+    }
+
+    .season img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .season span {
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 14px;
+    }
+
+    /* Hover effect faqat "Qish" uchun */
+    .season[data-season="qish"]:hover {
+        transform: scale(1.1);
+        box-shadow: 0px 5px 15px rgba(255, 255, 255, 0.4);
+    }
+
+    /* Active season */
+    .season.active {
+        border: 3px solid #ff9800;
+    }
+
+    /* Close button */
+    .modal button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        border: none;
+        background: #ff5722;
+        color: white;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .modal button:hover {
+        background: #e64a19;
+    }
+</style>
 </head>
 <body class="multiple-scenes ">
+    <button id="openModal">Mavsumni tanlash</button>
 
+    <div id="seasonModal" class="modal">
+        <div class="modal-content">
+            <h2>Mavsumni tanlang</h2>
+            <div class="seasons">
+                <div class="season" data-season="qish">
+                    <img src="https://avatars.mds.yandex.net/get-altay/1633071/2a00000186ad546d2a5be98c6ec432abb583/XL" alt="Qish">
+                    <span>Qish</span>
+                </div>
+                <div class="season" data-season="bahor">
+                    <img src="https://lh4.googleusercontent.com/proxy/dmmy4JR6KX46tOK3uTZ2xQvZyBqauBSkD5FgGHvQYlbv63g-lPVsOaAzlF9-6cdg4lwHJWSy5KY13oyGbikz6_BaCzEVSn13aZyD4FjAdT6mZnZ5Sggw" alt="Bahor">
+                    <span>Bahor</span>
+                </div>
+                <div class="season" data-season="yoz">
+                    <img src="https://avatars.mds.yandex.net/get-altay/10242164/2a0000019370d8e5aa9d4f4999b889654038/L_height" alt="Yoz">
+                    <span>Yoz</span>
+                </div>
+                <div class="season active" data-season="kuz">
+                    <img src="https://uzbekistan.travel/storage/app/media/objects/museums/museum-of-victims-of-repressions/kompleks_shahidlar_hotirasi.jpg" alt="Kuz">
+                    <span>Kuz</span>
+                </div>
+            </div>
+            <button hidden id="closeModal">Yopish</button>
+        </div>
+    </div>
 <div id="pano"></div>
 
 <div id="sceneList">
   <ul class="scenes">
     
       <a href="javascript:void(0)" class="scene" data-id="0-1">
-        <li class="text">1</li>
+        <li class="text">Shahidlar Xotirasi yodgorlik majmui</li>
       </a>
     
       <a href="javascript:void(0)" class="scene" data-id="1-2">
@@ -138,6 +261,65 @@
 
 <script src="data.js"></script>
 <script src="index.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const modal = document.getElementById("seasonModal");
+        const openModalBtn = document.getElementById("openModal");
+        const closeModalBtn = document.getElementById("closeModal");
 
+        // Sahifa yuklanganda modal avtomatik ochilsin
+        modal.style.display = "flex";
+
+        // "Mavsumni tanlash" tugmasi bosilganda modal ochiladi
+        openModalBtn.addEventListener("click", function () {
+            modal.style.display = "flex";
+        });
+
+        // "Yopish" tugmasi bosilganda modal yopiladi
+        closeModalBtn.addEventListener("click", function () {
+            modal.style.display = "none";
+        });
+
+        // Sezon tanlash
+        document.querySelectorAll('.season').forEach(season => {
+    season.addEventListener('click', function() {
+        document.querySelectorAll('.season').forEach(s => s.classList.remove('active'));
+        this.classList.add('active');
+
+        if (this.getAttribute("data-season") === "qish") {
+            modal.style.display = "none";
+        } else {
+            // Xabar chiqarish uchun
+            showWarningMessage();
+        }
+    });
+});
+
+function showWarningMessage() {
+    let warningMessage = document.createElement("div");
+    warningMessage.innerHTML = "🚧 <strong>Virtual tur mavjud emas.</strong><br>Tez orada yangilanadi! ⏳";
+    warningMessage.style.position = "fixed";
+    warningMessage.style.top = "20px";
+    warningMessage.style.left = "50%";
+    warningMessage.style.transform = "translateX(-50%)";
+    warningMessage.style.background = "#ffcc00";
+    warningMessage.style.color = "#333";
+    warningMessage.style.padding = "10px 20px";
+    warningMessage.style.borderRadius = "8px";
+    warningMessage.style.boxShadow = "0px 4px 10px rgba(0, 0, 0, 0.2)";
+    warningMessage.style.fontSize = "16px";
+    warningMessage.style.fontWeight = "bold";
+    warningMessage.style.textAlign = "center";
+    warningMessage.style.zIndex = "9999";
+
+    document.body.appendChild(warningMessage);
+
+    // 3 soniyadan keyin xabar yo'qoladi
+    setTimeout(() => {
+        warningMessage.remove();
+    }, 3000);
+}
+    });
+</script>
 </body>
 </html>

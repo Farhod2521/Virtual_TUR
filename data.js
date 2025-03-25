@@ -2,7 +2,7 @@ var APP_DATA = {
   "scenes": [
     {
       "id": "0-1",
-      "name": "1",
+      "name": "Shahidlar Xotirasi yodgorlik majmui",
       "levels": [
         {
           "tileSize": 256,
